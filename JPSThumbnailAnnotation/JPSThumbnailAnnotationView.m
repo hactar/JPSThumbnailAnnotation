@@ -73,7 +73,7 @@ static CGFloat const kJPSThumbnailAnnotationViewAnimationDuration = 0.25f;
 }
 
 - (void)setupTitleLabel {
-    _titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(-42.0f, 14.0f, 168.0f, 20.0f)];
+    _titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(-45.0f, 14.0f, 157.0f, 20.0f)];
     _titleLabel.textColor = [UIColor whiteColor];
     _titleLabel.font = [UIFont boldSystemFontOfSize:17];
     _titleLabel.minimumScaleFactor = 0.8f;
@@ -82,7 +82,7 @@ static CGFloat const kJPSThumbnailAnnotationViewAnimationDuration = 0.25f;
 }
 
 - (void)setupSubtitleLabel {
-    _subtitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(-42.0f, 34.0f, 168.0f, 20.0f)];
+    _subtitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(-45.0f, 34.0f, 157.0f, 20.0f)];
     _subtitleLabel.textColor = [UIColor lightTextColor];
     _subtitleLabel.font = [UIFont systemFontOfSize:12.0f];
     [self addSubview:_subtitleLabel];
@@ -96,12 +96,26 @@ static CGFloat const kJPSThumbnailAnnotationViewAnimationDuration = 0.25f;
     UIImage *disclosureIndicatorImage = [JPSThumbnailAnnotationView disclosureButtonImage];
     [_disclosureButton setImage:disclosureIndicatorImage forState:UIControlStateNormal];
     _disclosureButton.frame = CGRectMake(kJPSThumbnailAnnotationViewExpandOffset/2.0f + self.frame.size.width/4.0f + 4.0f,
-                                         22.5f,
+                                         7,
                                          disclosureIndicatorImage.size.width * 2,
-                                         disclosureIndicatorImage.size.height);
+                                         53);
     
     [_disclosureButton addTarget:self action:@selector(didTapDisclosureButton) forControlEvents:UIControlEventTouchDown];
     [self addSubview:_disclosureButton];
+    
+    [_disclosureButton setContentMode:UIViewContentModeCenter];
+    //_disclosureButton.backgroundColor = [UIColor yellowColor];
+    
+    CGSize mainViewSize = _disclosureButton.bounds.size;
+    CGFloat borderWidth = .5;
+    UIColor *borderColor = [UIColor whiteColor];
+    UIView *leftView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, borderWidth, mainViewSize.height)];
+    leftView.opaque = YES;
+    leftView.backgroundColor = borderColor;
+    // for bonus points, set the views' autoresizing mask so they'll stay with the edges:
+    leftView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleRightMargin;
+    
+    [_disclosureButton addSubview:leftView];
 }
 
 - (void)setLayerProperties {
@@ -262,7 +276,7 @@ static CGFloat const kJPSThumbnailAnnotationViewAnimationDuration = 0.25f;
 }
 
 + (UIImage *)disclosureButtonImage {
-    CGSize size = CGSizeMake(21.0f, 36.0f);
+    CGSize size = CGSizeMake(21.0f, 20.0f);
     UIGraphicsBeginImageContextWithOptions(size, NO, [[UIScreen mainScreen] scale]);
     
     UIBezierPath *bezierPath = [UIBezierPath bezierPath];
