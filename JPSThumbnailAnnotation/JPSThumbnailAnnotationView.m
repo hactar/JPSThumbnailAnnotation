@@ -62,6 +62,15 @@ static CGFloat const kJPSThumbnailAnnotationViewAnimationDuration = 0.25f;
     [self setDetailGroupAlpha:0.0f];
 }
 
+- (NSString *)accessibilityLabel {
+    return [NSString stringWithFormat:@"Map Pin: %@ %@", self.titleLabel.text, self.subtitleLabel.text];
+}
+
+- (BOOL)accessibilityActivate {
+    [self didTapDisclosureButton];
+    return YES;
+}
+
 - (void)setupImageView {
     _imageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0f, 10.0f, 35.0f, 47.0f)];
     _imageView.layer.cornerRadius = 4.0f;
