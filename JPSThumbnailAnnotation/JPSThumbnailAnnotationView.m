@@ -115,7 +115,6 @@ static CGFloat const kJPSThumbnailAnnotationViewAnimationDuration = 0.25f;
     BOOL iOS7 = [[[UIDevice currentDevice] systemVersion] floatValue] >= 7.0f;
     UIButtonType buttonType = iOS7 ? UIButtonTypeSystem : UIButtonTypeCustom;
     _disclosureButton = [UIButton buttonWithType:buttonType];
-
     _disclosureButton.tintColor = [UIColor whiteColor];
     _disclosureButton.frame = CGRectMake(self.frame.origin.x - kJPSThumbnailAnnotationViewExpandOffset/2+10,
                                          self.frame.origin.y+9,
@@ -239,6 +238,7 @@ static CGFloat const kJPSThumbnailAnnotationViewAnimationDuration = 0.25f;
     if (self.state != JPSThumbnailAnnotationViewStateExpanded) return;
     
     self.state = JPSThumbnailAnnotationViewStateAnimating;
+
     self.bounds = CGRectMake(self.bounds.origin.x + kJPSThumbnailAnnotationViewExpandOffset/2,
                              self.bounds.origin.y,
                              self.bounds.size.width - kJPSThumbnailAnnotationViewExpandOffset,
