@@ -206,19 +206,28 @@ static CGFloat const kJPSThumbnailAnnotationViewAnimationDuration = 0.25f;
     self.subtitleLabel.alpha = alpha;
 }
 
-- (void)expand {
+- (void) expand {
+    [self expandAnimated:YES];
+}
+- (void)expandAnimated: (BOOL) animated {
     if (self.state != JPSThumbnailAnnotationViewStateCollapsed) return;
     
     self.state = JPSThumbnailAnnotationViewStateAnimating;
     
-    [self animateBubbleWithDirection:JPSThumbnailAnnotationViewAnimationDirectionGrow];
+    [self animateBubbleWithDirection:JPSThumbnailAnnotationViewAnimationDirectionGrow animated:animated];
     self.frame = CGRectMake(self.frame.origin.x, self.frame.origin.y, self.frame.size.width+kJPSThumbnailAnnotationViewExpandOffset, self.frame.size.height);
     self.centerOffset = CGPointMake(kJPSThumbnailAnnotationViewExpandOffset/2.0f, -kJPSThumbnailAnnotationViewVerticalOffset);
-    [UIView animateWithDuration:kJPSThumbnailAnnotationViewAnimationDuration/2.0f delay:kJPSThumbnailAnnotationViewAnimationDuration options:UIViewAnimationOptionCurveEaseInOut animations:^{
+    if (animated) {
+        [UIView animateWithDuration:kJPSThumbnailAnnotationViewAnimationDuration/2.0f delay:kJPSThumbnailAnnotationViewAnimationDuration options:UIViewAnimationOptionCurveEaseInOut animations:^{
+            [self setDetailGroupAlpha:1.0f];
+        } completion:^(BOOL finished) {
+            self.state = JPSThumbnailAnnotationViewStateExpanded;
+        }];
+    } else {
         [self setDetailGroupAlpha:1.0f];
-    } completion:^(BOOL finished) {
         self.state = JPSThumbnailAnnotationViewStateExpanded;
-    }];
+    }
+    
 }
 
 - (void)shrink {
@@ -243,39 +252,57 @@ static CGFloat const kJPSThumbnailAnnotationViewAnimationDuration = 0.25f;
                      }];
 }
 
+
 - (void)animateBubbleWithDirection:(JPSThumbnailAnnotationViewAnimationDirection)animationDirection {
+    [self animateBubbleWithDirection:animationDirection animated:YES];
+}
+- (void)animateBubbleWithDirection:(JPSThumbnailAnnotationViewAnimationDirection)animationDirection animated: (BOOL) animated {
     BOOL growing = (animationDirection == JPSThumbnailAnnotationViewAnimationDirectionGrow);
     // Image
-    [UIView animateWithDuration:kJPSThumbnailAnnotationViewAnimationDuration animations:^{
+    
+    if (animated) {
+        [UIView animateWithDuration:kJPSThumbnailAnnotationViewAnimationDuration animations:^{
+            CGFloat xOffset = (growing ? -1 : 1) * kJPSThumbnailAnnotationViewExpandOffset/2.0f;
+            self.imageView.frame = CGRectOffset(self.imageView.frame, xOffset, 0.0f);
+        } completion:^(BOOL finished) {
+            if (animationDirection == JPSThumbnailAnnotationViewAnimationDirectionShrink) {
+                self.state = JPSThumbnailAnnotationViewStateCollapsed;
+            }
+        }];
+        
+        // Bubble
+        CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"path"];
+        
+        animation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+        animation.repeatCount = 1;
+        animation.removedOnCompletion = NO;
+        animation.fillMode = kCAFillModeForwards;
+        animation.duration = kJPSThumbnailAnnotationViewAnimationDuration;
+        
+        // Stroke & Shadow From/To Values
+        CGRect largeRect = CGRectInset(self.bounds, -kJPSThumbnailAnnotationViewExpandOffset/2.0f, 0.0f);
+        
+        CGPathRef fromPath = [self newBubbleWithRect:growing ? self.bounds : largeRect];
+        animation.fromValue = (__bridge id)fromPath;
+        CGPathRelease(fromPath);
+        
+        CGPathRef toPath = [self newBubbleWithRect:growing ? largeRect : self.bounds];
+        animation.toValue = (__bridge id)toPath;
+        CGPathRelease(toPath);
+        
+        [self.bgLayer addAnimation:animation forKey:animation.keyPath];
+    } else {
         CGFloat xOffset = (growing ? -1 : 1) * kJPSThumbnailAnnotationViewExpandOffset/2.0f;
         self.imageView.frame = CGRectOffset(self.imageView.frame, xOffset, 0.0f);
-    } completion:^(BOOL finished) {
         if (animationDirection == JPSThumbnailAnnotationViewAnimationDirectionShrink) {
             self.state = JPSThumbnailAnnotationViewStateCollapsed;
         }
-    }];
+        CGRect largeRect = CGRectInset(self.bounds, -kJPSThumbnailAnnotationViewExpandOffset/2.0f, 0.0f);
+        self.bgLayer.path = [self newBubbleWithRect:growing ? largeRect : self.bounds];
+    }
     
-    // Bubble
-    CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"path"];
     
-    animation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
-    animation.repeatCount = 1;
-    animation.removedOnCompletion = NO;
-    animation.fillMode = kCAFillModeForwards;
-    animation.duration = kJPSThumbnailAnnotationViewAnimationDuration;
     
-    // Stroke & Shadow From/To Values
-    CGRect largeRect = CGRectInset(self.bounds, -kJPSThumbnailAnnotationViewExpandOffset/2.0f, 0.0f);
-    
-    CGPathRef fromPath = [self newBubbleWithRect:growing ? self.bounds : largeRect];
-    animation.fromValue = (__bridge id)fromPath;
-    CGPathRelease(fromPath);
-    
-    CGPathRef toPath = [self newBubbleWithRect:growing ? largeRect : self.bounds];
-    animation.toValue = (__bridge id)toPath;
-    CGPathRelease(toPath);
-    
-    [self.bgLayer addAnimation:animation forKey:animation.keyPath];
 }
 
 #pragma mark - Disclosure Button

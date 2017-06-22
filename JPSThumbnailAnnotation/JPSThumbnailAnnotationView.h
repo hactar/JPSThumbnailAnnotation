@@ -35,5 +35,6 @@ typedef NS_ENUM(NSInteger, JPSThumbnailAnnotationViewState) {
 - (id)initWithAnnotation:(id<MKAnnotation>)annotation;
 
 - (void)updateWithThumbnail:(JPSThumbnail *)thumbnail;
+- (void)expandAnimated: (BOOL) animated;
 
 @end
