@@ -10,12 +10,4 @@
 
 @implementation JPSThumbnail
 
-- (instancetype)init{
-    self = [super init];
-    if(self){
-        self.contentMode = UIViewContentModeScaleAspectFill;
-    }
-    return self;
-}
-
 @end

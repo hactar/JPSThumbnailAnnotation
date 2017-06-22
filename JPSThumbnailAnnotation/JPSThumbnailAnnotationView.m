@@ -25,7 +25,6 @@ static CGFloat const kJPSThumbnailAnnotationViewAnimationDuration = 0.25f;
 @property (nonatomic, strong) UILabel *titleLabel;
 @property (nonatomic, strong) UILabel *subtitleLabel;
 @property (nonatomic, strong) ActionBlock disclosureBlock;
-@property (nonatomic, strong) UIImageView *disclosureImageView;
 
 @property (nonatomic, strong) CAShapeLayer *bgLayer;
 @property (nonatomic, strong) UIButton *disclosureButton;
@@ -58,7 +57,6 @@ static CGFloat const kJPSThumbnailAnnotationViewAnimationDuration = 0.25f;
     [self setupImageView];
     [self setupTitleLabel];
     [self setupSubtitleLabel];
-    [self setUpDisclosureImage];
     [self setupDisclosureButton];
     [self setLayerProperties];
     [self setDetailGroupAlpha:0.0f];
@@ -99,27 +97,17 @@ static CGFloat const kJPSThumbnailAnnotationViewAnimationDuration = 0.25f;
     [self addSubview:_subtitleLabel];
 }
 
-- (void) setUpDisclosureImage{
-    _disclosureImageView.tintColor = [UIColor grayColor];
-    UIImage *disclosureIndicatorImage = [JPSThumbnailAnnotationView disclosureButtonImage];
-    _disclosureImageView = [[ UIImageView alloc ] initWithImage:disclosureIndicatorImage];
-    _disclosureImageView.frame = CGRectMake(kJPSThumbnailAnnotationViewExpandOffset/2.0f + self.frame.size.width/2.0f + 8.0f,
-                                            26.5f,
-                                            disclosureIndicatorImage.size.width,
-                                            disclosureIndicatorImage.size.height);
-    
-    [self addSubview:_disclosureImageView];
-}
-
 - (void)setupDisclosureButton {
     BOOL iOS7 = [[[UIDevice currentDevice] systemVersion] floatValue] >= 7.0f;
     UIButtonType buttonType = iOS7 ? UIButtonTypeSystem : UIButtonTypeCustom;
     _disclosureButton = [UIButton buttonWithType:buttonType];
     _disclosureButton.tintColor = [UIColor whiteColor];
-    _disclosureButton.frame = CGRectMake(self.frame.origin.x - kJPSThumbnailAnnotationViewExpandOffset/2+10,
-                                         self.frame.origin.y+9,
-                                         self.frame.size.width + kJPSThumbnailAnnotationViewExpandOffset-20,
-                                         self.frame.size.height-33);
+    UIImage *disclosureIndicatorImage = [JPSThumbnailAnnotationView disclosureButtonImage];
+    [_disclosureButton setImage:disclosureIndicatorImage forState:UIControlStateNormal];
+    _disclosureButton.frame = CGRectMake(kJPSThumbnailAnnotationViewExpandOffset/2.0f + self.frame.size.width/4.0f + 4.0f,
+                                         7,
+                                         disclosureIndicatorImage.size.width * 2,
+                                         53);
     
     [_disclosureButton addTarget:self action:@selector(didTapDisclosureButton) forControlEvents:UIControlEventTouchDown];
     [self addSubview:_disclosureButton];
@@ -165,7 +153,6 @@ static CGFloat const kJPSThumbnailAnnotationViewAnimationDuration = 0.25f;
     self.imageView.image = thumbnail.image;
     self.imageView.tintColor = [UIColor whiteColor];
     self.disclosureBlock = thumbnail.disclosureBlock;
-    self.imageView.contentMode = thumbnail.contentMode;
 }
 
 #pragma mark - JPSThumbnailAnnotationViewProtocol
@@ -217,7 +204,6 @@ static CGFloat const kJPSThumbnailAnnotationViewAnimationDuration = 0.25f;
     self.disclosureButton.alpha = alpha;
     self.titleLabel.alpha = alpha;
     self.subtitleLabel.alpha = alpha;
-    self.disclosureImageView.alpha = alpha;
 }
 
 - (void)expand {
@@ -226,7 +212,8 @@ static CGFloat const kJPSThumbnailAnnotationViewAnimationDuration = 0.25f;
     self.state = JPSThumbnailAnnotationViewStateAnimating;
     
     [self animateBubbleWithDirection:JPSThumbnailAnnotationViewAnimationDirectionGrow];
-    self.bounds = CGRectMake(self.bounds.origin.x-kJPSThumbnailAnnotationViewExpandOffset/2, self.bounds.origin.y, self.bounds.size.width+kJPSThumbnailAnnotationViewExpandOffset, self.bounds.size.height);
+    self.frame = CGRectMake(self.frame.origin.x, self.frame.origin.y, self.frame.size.width+kJPSThumbnailAnnotationViewExpandOffset, self.frame.size.height);
+    self.centerOffset = CGPointMake(kJPSThumbnailAnnotationViewExpandOffset/2.0f, -kJPSThumbnailAnnotationViewVerticalOffset);
     [UIView animateWithDuration:kJPSThumbnailAnnotationViewAnimationDuration/2.0f delay:kJPSThumbnailAnnotationViewAnimationDuration options:UIViewAnimationOptionCurveEaseInOut animations:^{
         [self setDetailGroupAlpha:1.0f];
     } completion:^(BOOL finished) {
@@ -238,11 +225,11 @@ static CGFloat const kJPSThumbnailAnnotationViewAnimationDuration = 0.25f;
     if (self.state != JPSThumbnailAnnotationViewStateExpanded) return;
     
     self.state = JPSThumbnailAnnotationViewStateAnimating;
-
-    self.bounds = CGRectMake(self.bounds.origin.x + kJPSThumbnailAnnotationViewExpandOffset/2,
-                             self.bounds.origin.y,
-                             self.bounds.size.width - kJPSThumbnailAnnotationViewExpandOffset,
-                             self.bounds.size.height);
+    
+    self.frame = CGRectMake(self.frame.origin.x,
+                            self.frame.origin.y,
+                            self.frame.size.width - kJPSThumbnailAnnotationViewExpandOffset,
+                            self.frame.size.height);
     
     [UIView animateWithDuration:kJPSThumbnailAnnotationViewAnimationDuration/2.0f
                           delay:0.0f
