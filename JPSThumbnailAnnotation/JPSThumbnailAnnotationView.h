@@ -37,4 +37,6 @@ typedef NS_ENUM(NSInteger, JPSThumbnailAnnotationViewState) {
 - (void)updateWithThumbnail:(JPSThumbnail *)thumbnail;
 - (void)expandAnimated: (BOOL) animated;
 
+- (void) hideDisclosureButton;
+
 @end

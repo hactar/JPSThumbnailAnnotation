@@ -60,6 +60,7 @@ static CGFloat const kJPSThumbnailAnnotationViewAnimationDuration = 0.25f;
     [self setupDisclosureButton];
     [self setLayerProperties];
     [self setDetailGroupAlpha:0.0f];
+    [self hideDisclosureButton];
 }
 
 - (NSString *)accessibilityLabel {
@@ -125,6 +126,10 @@ static CGFloat const kJPSThumbnailAnnotationViewAnimationDuration = 0.25f;
     leftView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleRightMargin;
     
     [_disclosureButton addSubview:leftView];
+}
+
+- (void) hideDisclosureButton {
+    self.disclosureButton.hidden = YES;
 }
 
 - (void)setLayerProperties {
