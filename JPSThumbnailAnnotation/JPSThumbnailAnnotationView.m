@@ -26,7 +26,7 @@ static CGFloat const kJPSThumbnailAnnotationViewAnimationDuration = 0.25f;
 @property (nonatomic, strong) UILabel *subtitleLabel;
 @property (nonatomic, strong) ActionBlock disclosureBlock;
 
-@property (nonatomic, strong) CAShapeLayer *bgLayer;
+
 @property (nonatomic, strong) UIButton *disclosureButton;
 @property (nonatomic, assign) JPSThumbnailAnnotationViewState state;
 
@@ -60,7 +60,7 @@ static CGFloat const kJPSThumbnailAnnotationViewAnimationDuration = 0.25f;
     [self setupDisclosureButton];
     [self setLayerProperties];
     [self setDetailGroupAlpha:0.0f];
-    [self hideDisclosureButton];
+    //[self hideDisclosureButton];
 }
 
 - (NSString *)accessibilityLabel {
@@ -137,7 +137,7 @@ static CGFloat const kJPSThumbnailAnnotationViewAnimationDuration = 0.25f;
     CGPathRef path = [self newBubbleWithRect:self.bounds];
     _bgLayer.path = path;
     CFRelease(path);
-    _bgLayer.fillColor = [UIColor colorWithRed:250./255. green:85./255. blue:40./255. alpha:1.0f].CGColor;
+    _bgLayer.fillColor = [UIColor colorWithRed:0./255. green:85./255. blue:40./255. alpha:1.0f].CGColor;
     
     _bgLayer.shadowColor = [UIColor blackColor].CGColor;
     _bgLayer.shadowOffset = CGSizeMake(0.0f, 3.0f);
@@ -334,3 +334,4 @@ static CGFloat const kJPSThumbnailAnnotationViewAnimationDuration = 0.25f;
 }
 
 @end
+

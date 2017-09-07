@@ -31,6 +31,7 @@ typedef NS_ENUM(NSInteger, JPSThumbnailAnnotationViewState) {
 @end
 
 @interface JPSThumbnailAnnotationView : MKAnnotationView <JPSThumbnailAnnotationViewProtocol>
+@property (nonatomic, strong) CAShapeLayer *bgLayer;
 
 - (id)initWithAnnotation:(id<MKAnnotation>)annotation;
 
@@ -40,3 +41,4 @@ typedef NS_ENUM(NSInteger, JPSThumbnailAnnotationViewState) {
 - (void) hideDisclosureButton;
 
 @end
+
