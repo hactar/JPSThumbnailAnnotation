@@ -174,6 +174,14 @@ static CGFloat const kJPSThumbnailAnnotationViewAnimationDuration = 0.25f;
 
 #pragma mark - Geometry
 
+- (UIEdgeInsets)alignmentRectInsets {
+    if (self.state == JPSThumbnailAnnotationViewStateCollapsed) {
+        return UIEdgeInsetsMake(self.frame.size.height/2.0 - kJPSThumbnailAnnotationViewStandardHeight / 2.0 + 6, self.frame.size.width/2.0 - kJPSThumbnailAnnotationViewStandardWidth / 2.0 + 6, self.frame.size.height/2.0 - kJPSThumbnailAnnotationViewStandardHeight / 2.0 + 6, self.frame.size.width/2.0 - kJPSThumbnailAnnotationViewStandardWidth / 2.0 + 6);
+    }
+    return UIEdgeInsetsMake(self.frame.size.height/2.0, self.frame.size.width/2.0, self.frame.size.height/2.0, self.frame.size.width/2.0);
+    
+}
+
 - (CGPathRef)newBubbleWithRect:(CGRect)rect {
     CGFloat stroke = 1.0f;
     CGFloat radius = 7.0f;
