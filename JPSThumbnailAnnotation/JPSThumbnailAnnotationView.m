@@ -41,6 +41,7 @@ static CGFloat const kJPSThumbnailAnnotationViewAnimationDuration = 0.25f;
     
     if (self) {
         self.canShowCallout = NO;
+        //self.clipsToBounds = YES;
         self.frame = CGRectMake(0, 0, kJPSThumbnailAnnotationViewStandardWidth, kJPSThumbnailAnnotationViewStandardHeight);
         self.backgroundColor = [UIColor clearColor];
         self.centerOffset = CGPointMake(0, -kJPSThumbnailAnnotationViewVerticalOffset);
@@ -83,7 +84,7 @@ static CGFloat const kJPSThumbnailAnnotationViewAnimationDuration = 0.25f;
 }
 
 - (void)setupTitleLabel {
-    _titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(-45.0f, 14.0f, 157.0f, 20.0f)];
+    _titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(kJPSThumbnailAnnotationViewStandardWidth, 14.0f, 157.0f, 20.0f)];
     _titleLabel.textColor = [UIColor whiteColor];
     _titleLabel.font = [UIFont boldSystemFontOfSize:17];
     _titleLabel.minimumScaleFactor = 0.8f;
@@ -92,7 +93,7 @@ static CGFloat const kJPSThumbnailAnnotationViewAnimationDuration = 0.25f;
 }
 
 - (void)setupSubtitleLabel {
-    _subtitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(-45.0f, 34.0f, 157.0f, 20.0f)];
+    _subtitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(kJPSThumbnailAnnotationViewStandardWidth, 34.0f, 157.0f, 20.0f)];
     _subtitleLabel.textColor = [UIColor lightTextColor];
     _subtitleLabel.font = [UIFont systemFontOfSize:12.0f];
     [self addSubview:_subtitleLabel];
@@ -105,7 +106,7 @@ static CGFloat const kJPSThumbnailAnnotationViewAnimationDuration = 0.25f;
     _disclosureButton.tintColor = [UIColor whiteColor];
     UIImage *disclosureIndicatorImage = [JPSThumbnailAnnotationView disclosureButtonImage];
     [_disclosureButton setImage:disclosureIndicatorImage forState:UIControlStateNormal];
-    _disclosureButton.frame = CGRectMake(kJPSThumbnailAnnotationViewExpandOffset/2.0f + self.frame.size.width/4.0f + 4.0f,
+    _disclosureButton.frame = CGRectMake(kJPSThumbnailAnnotationViewExpandOffset + self.frame.size.width/4.0f + 4.0f,
                                          7,
                                          disclosureIndicatorImage.size.width * 2,
                                          53);
@@ -174,13 +175,18 @@ static CGFloat const kJPSThumbnailAnnotationViewAnimationDuration = 0.25f;
 
 #pragma mark - Geometry
 
+
 - (UIEdgeInsets)alignmentRectInsets {
     if (self.state == JPSThumbnailAnnotationViewStateCollapsed) {
-        return UIEdgeInsetsMake(self.frame.size.height/2.0 - kJPSThumbnailAnnotationViewStandardHeight / 2.0 + 6, self.frame.size.width/2.0 - kJPSThumbnailAnnotationViewStandardWidth / 2.0 + 6, self.frame.size.height/2.0 - kJPSThumbnailAnnotationViewStandardHeight / 2.0 + 6, self.frame.size.width/2.0 - kJPSThumbnailAnnotationViewStandardWidth / 2.0 + 6);
+        UIEdgeInsets temp = UIEdgeInsetsMake(self.frame.size.height/2.0 - kJPSThumbnailAnnotationViewStandardHeight / 2.0 + 6, self.frame.size.width/2.0 - kJPSThumbnailAnnotationViewStandardWidth / 2.0 + 6, self.frame.size.height/2.0 - kJPSThumbnailAnnotationViewStandardHeight / 2.0 + 6, self.frame.size.width/2.0 - kJPSThumbnailAnnotationViewStandardWidth / 2.0 + 6);
+        return temp;
     }
-    return UIEdgeInsetsMake(self.frame.size.height/2.0, self.frame.size.width/2.0, self.frame.size.height/2.0, self.frame.size.width/2.0);
+    UIEdgeInsets temp = UIEdgeInsetsMake(self.frame.size.height/2.0, self.frame.size.width/2.0, self.frame.size.height/2.0, self.frame.size.width/2.0);
+    
+    return temp;
     
 }
+
 
 - (CGPathRef)newBubbleWithRect:(CGRect)rect {
     CGFloat stroke = 1.0f;
@@ -227,19 +233,28 @@ static CGFloat const kJPSThumbnailAnnotationViewAnimationDuration = 0.25f;
     
     self.state = JPSThumbnailAnnotationViewStateAnimating;
     
+    
     [self animateBubbleWithDirection:JPSThumbnailAnnotationViewAnimationDirectionGrow animated:animated];
-    self.frame = CGRectMake(self.frame.origin.x, self.frame.origin.y, self.frame.size.width+kJPSThumbnailAnnotationViewExpandOffset, self.frame.size.height);
-    self.centerOffset = CGPointMake(kJPSThumbnailAnnotationViewExpandOffset/2.0f, -kJPSThumbnailAnnotationViewVerticalOffset);
+    
+    //self.centerOffset = CGPointMake(kJPSThumbnailAnnotationViewExpandOffset/2.0f, -kJPSThumbnailAnnotationViewVerticalOffset);
     if (animated) {
-        [UIView animateWithDuration:kJPSThumbnailAnnotationViewAnimationDuration/2.0f delay:kJPSThumbnailAnnotationViewAnimationDuration options:UIViewAnimationOptionCurveEaseInOut animations:^{
-            [self setDetailGroupAlpha:1.0f];
-        } completion:^(BOOL finished) {
-            self.state = JPSThumbnailAnnotationViewStateExpanded;
-        }];
+        [UIView animateWithDuration:kJPSThumbnailAnnotationViewAnimationDuration delay: 0.0 options:UIViewAnimationOptionCurveEaseInOut
+                         animations:^{
+                             
+                             self.bounds = CGRectMake(0, 0, kJPSThumbnailAnnotationViewStandardWidth + kJPSThumbnailAnnotationViewExpandOffset, self.frame.size.height);
+                             
+                         } completion:^(BOOL finished) {
+                             [self setDetailGroupAlpha:1.0f];
+                             self.state = JPSThumbnailAnnotationViewStateExpanded;
+                             
+                         }];
     } else {
         [self setDetailGroupAlpha:1.0f];
+        self.bounds = CGRectMake(0, 0, kJPSThumbnailAnnotationViewStandardWidth + kJPSThumbnailAnnotationViewExpandOffset, self.frame.size.height);
         self.state = JPSThumbnailAnnotationViewStateExpanded;
     }
+    [CATransaction commit];
+    
     
 }
 
@@ -248,21 +263,23 @@ static CGFloat const kJPSThumbnailAnnotationViewAnimationDuration = 0.25f;
     
     self.state = JPSThumbnailAnnotationViewStateAnimating;
     
-    self.frame = CGRectMake(self.frame.origin.x,
-                            self.frame.origin.y,
-                            self.frame.size.width - kJPSThumbnailAnnotationViewExpandOffset,
-                            self.frame.size.height);
-    
-    [UIView animateWithDuration:kJPSThumbnailAnnotationViewAnimationDuration/2.0f
+    [self setDetailGroupAlpha:0.0f];
+    [UIView animateWithDuration:kJPSThumbnailAnnotationViewAnimationDuration
                           delay:0.0f
                         options:UIViewAnimationOptionCurveEaseInOut
                      animations:^{
-                         [self setDetailGroupAlpha:0.0f];
+                         self.bounds = CGRectMake(0,
+                                                  0,
+                                                  kJPSThumbnailAnnotationViewStandardWidth,
+                                                  kJPSThumbnailAnnotationViewStandardHeight);
+                         
                      }
                      completion:^(BOOL finished) {
-                         [self animateBubbleWithDirection:JPSThumbnailAnnotationViewAnimationDirectionShrink];
-                         self.centerOffset = CGPointMake(0.0f, -kJPSThumbnailAnnotationViewVerticalOffset);
+                         
+                         //self.centerOffset = CGPointMake(0.0f, -kJPSThumbnailAnnotationViewVerticalOffset);
                      }];
+    [self animateBubbleWithDirection:JPSThumbnailAnnotationViewAnimationDirectionShrink];
+    
 }
 
 
@@ -274,14 +291,16 @@ static CGFloat const kJPSThumbnailAnnotationViewAnimationDuration = 0.25f;
     // Image
     
     if (animated) {
+        
+        
         [UIView animateWithDuration:kJPSThumbnailAnnotationViewAnimationDuration animations:^{
-            CGFloat xOffset = (growing ? -1 : 1) * kJPSThumbnailAnnotationViewExpandOffset/2.0f;
-            self.imageView.frame = CGRectOffset(self.imageView.frame, xOffset, 0.0f);
         } completion:^(BOOL finished) {
             if (animationDirection == JPSThumbnailAnnotationViewAnimationDirectionShrink) {
                 self.state = JPSThumbnailAnnotationViewStateCollapsed;
             }
         }];
+        
+        
         
         // Bubble
         CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"path"];
@@ -293,7 +312,8 @@ static CGFloat const kJPSThumbnailAnnotationViewAnimationDuration = 0.25f;
         animation.duration = kJPSThumbnailAnnotationViewAnimationDuration;
         
         // Stroke & Shadow From/To Values
-        CGRect largeRect = CGRectInset(self.bounds, -kJPSThumbnailAnnotationViewExpandOffset/2.0f, 0.0f);
+        //CGRect largeRect = CGRectInset(self.bounds, -kJPSThumbnailAnnotationViewExpandOffset/2.0f, 0.0f);
+        CGRect largeRect = CGRectMake(0, 0, self.bounds.size.width + kJPSThumbnailAnnotationViewExpandOffset, self.bounds.size.height);
         
         CGPathRef fromPath = [self newBubbleWithRect:growing ? self.bounds : largeRect];
         animation.fromValue = (__bridge id)fromPath;
@@ -305,12 +325,12 @@ static CGFloat const kJPSThumbnailAnnotationViewAnimationDuration = 0.25f;
         
         [self.bgLayer addAnimation:animation forKey:animation.keyPath];
     } else {
-        CGFloat xOffset = (growing ? -1 : 1) * kJPSThumbnailAnnotationViewExpandOffset/2.0f;
-        self.imageView.frame = CGRectOffset(self.imageView.frame, xOffset, 0.0f);
+        //CGFloat xOffset = (growing ? -1 : 1) * kJPSThumbnailAnnotationViewExpandOffset/2.0f;
+        //self.imageView.frame = CGRectOffset(self.imageView.frame, xOffset, 0.0f);
         if (animationDirection == JPSThumbnailAnnotationViewAnimationDirectionShrink) {
             self.state = JPSThumbnailAnnotationViewStateCollapsed;
         }
-        CGRect largeRect = CGRectInset(self.bounds, -kJPSThumbnailAnnotationViewExpandOffset/2.0f, 0.0f);
+        CGRect largeRect = CGRectMake(0, 0, self.bounds.size.width + kJPSThumbnailAnnotationViewExpandOffset, self.bounds.size.height);
         self.bgLayer.path = [self newBubbleWithRect:growing ? largeRect : self.bounds];
     }
     
