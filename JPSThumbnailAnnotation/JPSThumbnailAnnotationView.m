@@ -18,6 +18,8 @@ static CGFloat const kJPSThumbnailAnnotationViewExpandOffset      = 200.0f;
 static CGFloat const kJPSThumbnailAnnotationViewVerticalOffset    = 34.0f;
 static CGFloat const kJPSThumbnailAnnotationViewAnimationDuration = 0.25f;
 
+
+
 @interface JPSThumbnailAnnotationView ()
 
 @property (nonatomic, readwrite) CLLocationCoordinate2D coordinate;
@@ -33,6 +35,7 @@ static CGFloat const kJPSThumbnailAnnotationViewAnimationDuration = 0.25f;
 @end
 
 @implementation JPSThumbnailAnnotationView
+
 
 #pragma mark - Setup
 
@@ -178,8 +181,9 @@ static CGFloat const kJPSThumbnailAnnotationViewAnimationDuration = 0.25f;
 
 - (UIEdgeInsets)alignmentRectInsets {
     if (self.state == JPSThumbnailAnnotationViewStateCollapsed) {
-        UIEdgeInsets temp = UIEdgeInsetsMake(self.frame.size.height/2.0 - kJPSThumbnailAnnotationViewStandardHeight / 2.0 + 6, self.frame.size.width/2.0 - kJPSThumbnailAnnotationViewStandardWidth / 2.0 + 6, self.frame.size.height/2.0 - kJPSThumbnailAnnotationViewStandardHeight / 2.0 + 6, self.frame.size.width/2.0 - kJPSThumbnailAnnotationViewStandardWidth / 2.0 + 6);
-        return temp;
+        static UIEdgeInsets const collapsedAlignRectInsets = {6, 6, 6, 6};
+        
+        return collapsedAlignRectInsets;
     }
     UIEdgeInsets temp = UIEdgeInsetsMake(self.frame.size.height/2.0, self.frame.size.width/2.0, self.frame.size.height/2.0, self.frame.size.width/2.0);
     
