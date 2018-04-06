@@ -23,6 +23,7 @@
 @property (nonatomic, readonly) JPSThumbnail *thumbnail;
 @property (nonatomic, strong) UIColor *color;
 @property (nonatomic, strong) NSString *overrideClusterIdentifier;
+@property (nonatomic, readwrite) JPSThumbnailAnnotationView *view;
 
 + (instancetype)annotationWithThumbnail:(JPSThumbnail *)thumbnail;
 - (id)initWithThumbnail:(JPSThumbnail *)thumbnail;

@@ -22,16 +22,12 @@ static CGFloat const kJPSThumbnailAnnotationViewAnimationDuration = 0.25f;
 
 @interface JPSThumbnailAnnotationView ()
 
-@property (nonatomic, readwrite) CLLocationCoordinate2D coordinate;
-@property (nonatomic, strong) UIImageView *imageView;
-@property (nonatomic, strong) UILabel *titleLabel;
-@property (nonatomic, strong) UILabel *subtitleLabel;
-@property (nonatomic, strong) ActionBlock disclosureBlock;
+
 
 
 @property (nonatomic, strong) UIButton *disclosureButton;
 @property (nonatomic, assign) JPSThumbnailAnnotationViewState state;
-
+@property (nonatomic, strong) JPSThumbnail *myThumbnail;
 @end
 
 @implementation JPSThumbnailAnnotationView
@@ -44,24 +40,33 @@ static CGFloat const kJPSThumbnailAnnotationViewAnimationDuration = 0.25f;
     
     if (self) {
         self.canShowCallout = NO;
-        //self.clipsToBounds = YES;
+        self.clipsToBounds = YES;
         self.frame = CGRectMake(0, 0, kJPSThumbnailAnnotationViewStandardWidth, kJPSThumbnailAnnotationViewStandardHeight);
         self.backgroundColor = [UIColor clearColor];
         self.centerOffset = CGPointMake(0, -kJPSThumbnailAnnotationViewVerticalOffset);
         
         _state = JPSThumbnailAnnotationViewStateCollapsed;
-        
         [self setupView];
+        
     }
     
     return self;
 }
 
+
+- (void)prepareForDisplay {
+    if (!self.imageView) {
+        
+        
+    }
+    [super prepareForDisplay];
+}
+
+
+
+
 - (void)setupView {
     [self setupImageView];
-    [self setupTitleLabel];
-    [self setupSubtitleLabel];
-    [self setupDisclosureButton];
     [self setLayerProperties];
     [self setDetailGroupAlpha:0.0f];
     //[self hideDisclosureButton];
@@ -83,6 +88,7 @@ static CGFloat const kJPSThumbnailAnnotationViewAnimationDuration = 0.25f;
     _imageView.layer.borderColor = [[UIColor whiteColor] CGColor];
     _imageView.layer.borderWidth = 1.0f;
     _imageView.contentMode = UIViewContentModeScaleAspectFit;
+    _imageView.tintColor = [UIColor whiteColor];
     [self addSubview:_imageView];
 }
 
@@ -157,11 +163,12 @@ static CGFloat const kJPSThumbnailAnnotationViewAnimationDuration = 0.25f;
 
 - (void)updateWithThumbnail:(JPSThumbnail *)thumbnail {
     self.coordinate = thumbnail.coordinate;
-    self.titleLabel.text = thumbnail.title;
-    self.subtitleLabel.text = thumbnail.subtitle;
-    self.imageView.image = thumbnail.image;
-    self.imageView.tintColor = [UIColor whiteColor];
-    self.disclosureBlock = thumbnail.disclosureBlock;
+    self.myThumbnail = thumbnail;
+    self.imageView.image = [UIImage imageNamed:thumbnail.imageName];
+
+    
+
+
 }
 
 #pragma mark - JPSThumbnailAnnotationViewProtocol
@@ -233,6 +240,17 @@ static CGFloat const kJPSThumbnailAnnotationViewAnimationDuration = 0.25f;
     [self expandAnimated:YES];
 }
 - (void)expandAnimated: (BOOL) animated {
+    
+    if (_titleLabel == nil) {
+        [self setupTitleLabel];
+        [self setupSubtitleLabel];
+        [self setupDisclosureButton];
+    }
+
+    
+    self.titleLabel.text = self.myThumbnail.title;
+    self.subtitleLabel.text = self.myThumbnail.subtitle;
+    
     if (self.state != JPSThumbnailAnnotationViewStateCollapsed) return;
     
     self.state = JPSThumbnailAnnotationViewStateAnimating;
@@ -345,7 +363,8 @@ static CGFloat const kJPSThumbnailAnnotationViewAnimationDuration = 0.25f;
 #pragma mark - Disclosure Button
 
 - (void)didTapDisclosureButton {
-    if (self.disclosureBlock) self.disclosureBlock();
+    
+  
 }
 
 + (UIImage *)disclosureButtonImage {

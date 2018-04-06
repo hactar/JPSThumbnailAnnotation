@@ -32,6 +32,11 @@ typedef NS_ENUM(NSInteger, JPSThumbnailAnnotationViewState) {
 
 @interface JPSThumbnailAnnotationView : MKAnnotationView <JPSThumbnailAnnotationViewProtocol>
 @property (nonatomic, strong) CAShapeLayer *bgLayer;
+@property (nonatomic, readwrite) CLLocationCoordinate2D coordinate;
+@property (nonatomic, strong) UIImageView *imageView;
+@property (nonatomic, strong) UILabel *titleLabel;
+@property (nonatomic, strong) UILabel *subtitleLabel;
+@property (nonatomic, strong) UIColor *annotationColor;
 
 - (id)initWithAnnotation:(id<MKAnnotation>)annotation;
 
