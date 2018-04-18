@@ -164,7 +164,10 @@ static CGFloat const kJPSThumbnailAnnotationViewAnimationDuration = 0.25f;
 - (void)updateWithThumbnail:(JPSThumbnail *)thumbnail {
     self.coordinate = thumbnail.coordinate;
     self.myThumbnail = thumbnail;
-    self.imageView.image = [UIImage imageNamed:thumbnail.imageName];
+    @autoreleasepool {
+        self.imageView.image = [UIImage imageNamed:thumbnail.imageName];
+    }
+
 
     
 
